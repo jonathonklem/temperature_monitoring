@@ -1,6 +1,5 @@
 #include <SPI.h>
 #include <Ethernet.h>
-#include <stdlib.h>
 
 // edit this to the analog pin that your temperature transistor is connected to
 const int temperaturePin = 3;

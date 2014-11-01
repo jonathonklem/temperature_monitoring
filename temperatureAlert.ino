@@ -31,8 +31,12 @@ void setup()
   // give the ethernet module time to boot up:
   delay(1000);
 
-  // start the Ethernet connection using a fixed IP address and DNS server:
-  Ethernet.begin(mac, ip, myDns);
+  // start the Ethernet connection:
+  if (Ethernet.begin(mac) == 0) {
+    Serial.println("Failed to configure Ethernet using DHCP");
+    // try to configure using IP address instead of DHCP:
+    Ethernet.begin(mac, ip);
+  }
 
   // print the Ethernet board/shield's IP address:
   Serial.print("My IP address: ");

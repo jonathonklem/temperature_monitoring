@@ -4,7 +4,7 @@ temperature_monitoring
 **Installation**
  - temperatureAlert.ino gets compiled and uploaded to your Arduino device
  - a mysql database needs to be created with the following table
- -    `CREATE TABLE temperature (
+`CREATE TABLE temperature (
   id int(11) NOT NULL AUTO_INCREMENT,
   temperature float NOT NULL,
   PRIMARY KEY (id)

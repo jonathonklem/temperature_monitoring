@@ -80,25 +80,14 @@ void loop()
 
 // this method makes a HTTP connection to the server:
 void httpRequest(float temperature) {
-  char requestLine[40];
-  char number[4];
-  
-  // convert float to string
-  snprintf(number, 4, "%f", temperature);
-  
-  // build our GET request
-  strcpy(requestLine, "GET /settemp.php?temp=");
-  strcat(requestLine, number);
-  strcat(requestLine, " HTTP/1.1");
-  
-  
   // if there's a successful connection:
   if (client.connect(server, 80)) {
     Serial.println("connecting...");
-    Serial.println(requestLine);
     // send the HTTP PUT request:
-    client.println(requestLine);
-    client.println("Host: www.arduino.cc");
+    client.print("GET /settemp.php?temp=");
+    client.print(temperature);
+    client.println(" HTTP/1.1");
+    client.println("Host: www.yoursite.com");
     client.println("User-Agent: arduino-ethernet");
     client.println("Connection: close");
     client.println();

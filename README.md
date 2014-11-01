@@ -6,9 +6,13 @@ temperature_monitoring
  - a mysql database needs to be created with the following table
 
     CREATE TABLE temperature (
+    
     id int(11) NOT NULL AUTO_INCREMENT,
+    
     temperature float NOT NULL,
+    
     PRIMARY KEY (id)
+    
     ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3039 ;
     
  - gettemp.php and settemp.php need to be uploaded to your web server

@@ -87,7 +87,7 @@ void httpRequest(float temperature) {
     client.print("GET /settemp.php?temp=");
     client.print(temperature);
     client.println(" HTTP/1.1");
-    client.println("Host: www.yoursite.com");
+    client.println("Host: www.yourwebsite.com");
     client.println("User-Agent: arduino-ethernet");
     client.println("Connection: close");
     client.println();

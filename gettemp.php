@@ -10,5 +10,5 @@
   header("Content-Type:text/xml");
 ?>
 <Response>
-  <Say voice="woman" loop="10">The current temperature in Jonathon's room is <?php echo $row['temperature']; ?> degrees.  The current date and time is <?php echo date("F j, Y, g:i a", strtotime('+2 hours', time())); ?>.  Thank you for indulging his silly over-use of technology.</Say>
+  <Say voice="woman" loop="10">The current temperature in your room is <?php echo $row['temperature']; ?> degrees.  The current date and time is <?php echo date("F j, Y, g:i a", strtotime('+2 hours', time())); ?>. </Say>
 </Response>

@@ -1,84 +1,74 @@
+/*
+  Temperature Reporter
+ 
+ This was a combination and alteration of a couple different example sketches.  Namely the web client sketch 
+ and the USK circuit #7
+ 
+ */
+
 #include <SPI.h>
 #include <Ethernet.h>
 
 // edit this to the analog pin that your temperature transistor is connected to
 const int temperaturePin = 3;
 
-// assign a MAC address for the ethernet controller.
-// fill in your address here:
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
+// Enter a MAC address for your controller below.
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 
-// fill in an available IP address on your network here,
-// for manual configuration, this must be on your subnet:
+// Your website's domain
+char server[] = "www.jonathonklem.com";    
+
+// Set the static IP address to use if the DHCP fails to assign
+// be sure to set this to a valid ip in your subnet
 IPAddress ip(192,168,0,177);
 
-// use the google's dns
-IPAddress myDns(8,8,8,8);
-
-// initialize the library instance:
+// This will be used to interact with ethernet shield
 EthernetClient client;
 
-char server[] = "www.yourwebsite.com";
+// This keeps track of whether or not we have sent out a GET request or are waiting for a response
+boolean sentRequest = false;
 
-unsigned long lastConnectionTime = 0;          // last time you connected to the server, in milliseconds
-boolean lastConnected = false;                 // state of the connection last time through the main loop
-const unsigned long postingInterval = 60*1000;  // delay between updates, in milliseconds
-
-void setup()
-{
+void setup() {
+ // Open serial communications and wait for port to open:
   Serial.begin(9600);
-
-  // give the ethernet module time to boot up:
-  delay(1000);
+   while (!Serial) {
+    ; // wait for serial port to connect. Needed for Leonardo only
+  }
 
   // start the Ethernet connection:
   if (Ethernet.begin(mac) == 0) {
     Serial.println("Failed to configure Ethernet using DHCP");
-    // try to configure using IP address instead of DHCP:
+    // try to congifure using IP address instead of DHCP:
     Ethernet.begin(mac, ip);
   }
-
-  // print the Ethernet board/shield's IP address:
-  Serial.print("My IP address: ");
-  Serial.println(Ethernet.localIP());
+  // give the Ethernet shield a second to initialize:
+  delay(1000);
+  Serial.println("connecting...");
 }
-
 
 void loop()
 {
-  float voltage, degreesC, degreesF;
-
-  voltage = getVoltage(temperaturePin); 
-  degreesC = (voltage - 0.5) * 100.0;
-  degreesF = degreesC * (9.0/5.0) + 32.0;
+  if (!sentRequest) { 
+    httpRequest(getTemperature(temperaturePin));
+    sentRequest = true;
+  } else {
+    // if there are incoming bytes available 
+    // from the server, read them and print them:
+    if (client.available()) {
+      char c = client.read();
+      Serial.print(c);
+    }
   
-  // if there's incoming data from the net connection.
-  // send it out the serial port.  This is for debugging
-  // purposes only:
-  if (client.available()) {
-    char c = client.read();
-    Serial.print(c);
+    // if the server's disconnected, stop the client:
+    if (!client.connected()) {
+      Serial.println();
+      Serial.println("disconnecting.");
+      client.stop();
+      
+      delay(60000); // repeat once every minute
+      sentRequest = false;
+    }
   }
-
-  // if there's no net connection, but there was one last time
-  // through the loop, then stop the client:
-  if (!client.connected() && lastConnected) {
-    Serial.println();
-    Serial.println("disconnecting.");
-    client.stop();
-  }
-  
-  // if you're not connected, and ten seconds have passed since
-  // your last connection, then connect again and send data:
-  if(!client.connected() && (millis() - lastConnectionTime > postingInterval)) {
-    httpRequest(degreesF);
-  }
-  
-  // store the state of the connection for next time through
-  // the loop:
-  lastConnected = client.connected();
-  
-  delay(500); // repeat once per second (change as you wish!)
 }
 
 // this method makes a HTTP connection to the server:
@@ -90,13 +80,9 @@ void httpRequest(float temperature) {
     client.print("GET /settemp.php?temp=");
     client.print(temperature);
     client.println(" HTTP/1.1");
-    client.println("Host: www.yourwebsite.com");
-    client.println("User-Agent: arduino-ethernet");
+    client.println("Host: www.jonathonklem.com");
     client.println("Connection: close");
     client.println();
-
-    // note the time that the connection was made:
-    lastConnectionTime = millis();
   } 
   else {
     // if you couldn't make a connection:
@@ -104,6 +90,7 @@ void httpRequest(float temperature) {
     Serial.println("disconnecting.");
     client.stop();
   }
+  
 }
 
 float getVoltage(int pin)
@@ -112,3 +99,13 @@ float getVoltage(int pin)
   return (analogRead(pin) * 0.004882814);
 }
 
+float getTemperature(int pin) 
+{
+  float voltage, degreesC, degreesF;
+
+  voltage = getVoltage(pin); 
+  degreesC = (voltage - 0.5) * 100.0;
+  degreesF = degreesC * (9.0/5.0) + 32.0;
+  
+  return degreesF;
+}

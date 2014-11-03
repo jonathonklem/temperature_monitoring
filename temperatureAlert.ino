@@ -16,7 +16,7 @@ const int temperaturePin = 3;
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 
 // Your website's domain
-char server[] = "www.jonathonklem.com";    
+char server[] = "www.yoursite.com";    
 
 // Set the static IP address to use if the DHCP fails to assign
 // be sure to set this to a valid ip in your subnet
@@ -80,7 +80,7 @@ void httpRequest(float temperature) {
     client.print("GET /settemp.php?temp=");
     client.print(temperature);
     client.println(" HTTP/1.1");
-    client.println("Host: www.jonathonklem.com");
+    client.println("Host: www.yoursite.com");
     client.println("Connection: close");
     client.println();
   } 

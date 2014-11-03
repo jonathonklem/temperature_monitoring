@@ -1,6 +1,8 @@
 temperature_monitoring
 ======================
 
+Code used in https://www.jonathonklem.com/blog/useless-arduino-hacking/
+
 **Installation**
  - temperatureAlert.ino gets compiled and uploaded to your Arduino device
  - a mysql database needs to be created with the following table
